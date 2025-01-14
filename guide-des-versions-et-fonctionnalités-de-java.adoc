@@ -1,0 +1,881 @@
+= Versions et Fonctionnalités de Java
+Mourad ALIBI
+205-01-14
+:revdate: 205-01-14
+:page-layout: layout-guides
+:page-icon: files_paper
+:sourcedir: /mnt/c/dev/TODO
+:linkattrs:
+:page-image: "/images/guides/undraw_version_control_9bpv.png"
+:page-description: Vous pouvez utiliser ce guide pour obtenir des informations pratiques sur la façon de trouver et d'installer la dernière version de Java, comprendre les différences entre les distributions de Java (Adoptium, AdoptOpenJdk, Temurin, OpenJDK, OracleJDK, etc.), ainsi que pour avoir un aperçu des fonctionnalités du langage Java, y compris les versions de Java 8 à 19.
+:page-published: true
+:page-tags: ["java", "openjdk", "jdk"]
+
+== Informations Pratiques
+
+Commençons par examiner quelques questions pratiques courantes que les gens se posent lorsqu'ils essaient de choisir la bonne version de Java pour leur projet.
+
+=== TL;DR Je veux juste un lien de téléchargement et savoir tout le reste. Où dois-je aller ?
+
+Allez sur le site https://adoptium.net[Adoptium], choisissez la dernière version disponible, téléchargez-la et installez-la. Ensuite, revenez à ce guide pour peut-être encore apprendre une chose ou deux sur les versions de Java.
+
+=== Quelle est la dernière version de Java ?
+
+En janvier 2025, https://openjdk.java.net/projects/jdk/24/[Java 24] est la dernière version de Java publiée. En mars 2025, https://openjdk.java.net/projects/jdk/25/[Java 25] suivra. La version actuelle de support à long terme (LTS) de Java est Java 21, publiée en septembre 2023, et la prochaine version LTS sera Java 25, prévue pour septembre 2025.
+
+=== Quelle version de Java devrais-je utiliser ?
+
+Les nouvelles versions de Java sortent maintenant tous les 6 mois. Ainsi, Java 21 est sortie en septembre 2023, Java 22 en mars 2024, Java 23 en septembre 2024, et Java 24 en mars 2025. Dans le passé, les cycles de publication de Java étaient _beaucoup plus longs_, jusqu'à 3-5 ans. Ce graphique le démontre :
+
+[ditaa,java-versions-release-cycles-8,png]
+
+----
+|
+|  09/04    09/06         07/11     03/14     09/17  03/18  09/18  03/19  09/19  03/20  09/20  03/21  09/21  03/22  09/22   03/23    03/24    09/24    03/25
+|----|--------|-------------|---------|---------|------|------|------|------|------|------|------|------|------|------|------|--------|---------|---------|----->
+|   5.0       6             7         8         9      10     11     12     13     14     15     16     17     18     19    20  ...  22       23       24     25
+|
+----
+
+Avec autant de nouvelles versions qui sortent, il y a essentiellement ces scénarios d'utilisation réels(™) :
+
+* Les projets hérités dans les entreprises sont souvent coincés avec Java 8 (voir <<Pourquoi les entreprises sont-elles encore coincées avec Java 8 ?>>). Par conséquent, vous serez obligé d'utiliser Java 8 également.
+* Certains projets hérités sont même coincés sur Java 1.5 (publié en 2004) ou 1.6 (publié en 2006) - désolé, les amis, je compatis !
+* Si vous vous assurez d'utiliser les derniers IDE, frameworks et outils de construction et que vous démarrez un nouveau projet, vous pouvez, sans hésitation, utiliser Java 21 (LTS) ou même la toute dernière version de Java 24.
+* Il y a le domaine spécial du développement Android, où la version de Java est essentiellement coincée à Java 7, avec un https://developer.android.com/studio/write/java8-support[ensemble spécifique de fonctionnalités de Java 8] disponibles. Ou vous passez au langage de programmation Kotlin.
+
+
+=== Pourquoi les entreprises sont-elles encore coincées avec Java 8 ?
+
+Il y a un mélange de différentes raisons pour lesquelles certaines entreprises sont encore coincées avec Java 8. En voici quelques-unes :
+
+* Les outils de construction (Maven, Gradle, etc.) et certaines bibliothèques avaient _initialement_ des bugs avec les versions de Java > 8 et avaient besoin de mises à jour. Par exemple, certains outils de construction comme Maven affichaient des https://issues.apache.org/jira/browse/GROOVY-8339[avertissements "accès réflexif"] lors de la construction de projets Java, ce qui donnait simplement l'impression que ce n'était "pas prêt", même si les constructions étaient correctes.
+* Jusqu'à Java 8, vous utilisiez essentiellement les builds JDK d'Oracle et vous n'aviez pas à vous soucier des licences. Oracle a changé le https://www.oracle.com/technetwork/java/javase/overview/oracle-jdk-faqs.html[schéma de licence en 2019], ce qui a fait que l'internet est devenu fou avec une tonne d'articles disant "Java n'est plus gratuit" - et une bonne dose de confusion a suivi. Ce n'est cependant pas vraiment un problème, comme vous l'apprendrez dans la section <<Distributions Java>> de ce guide.
+* Certaines entreprises ont des politiques pour n'utiliser que les versions LTS et s'appuient sur leurs fournisseurs de système d'exploitation pour leur fournir ces builds, ce qui prend du temps.
+
+Pour résumer : vous avez un mélange de problèmes pratiques (mise à niveau de vos outils, bibliothèques, frameworks) et de problèmes politiques.
+
+=== Pourquoi certaines versions de Java, comme 8, sont-elles aussi appelées 1.8 ?
+
+Les versions de Java avant 9 avaient simplement un schéma de nommage différent. Ainsi, Java 8 peut aussi être appelé _1.8_, Java 5 peut être appelé _1.5_, etc. Lorsque vous exécutiez la commande 'java -version', avec ces versions, vous obteniez une sortie comme ceci :
+
+[source,console]
+----
+c:\Program Files\Java\jdk1.8.0_191\bin>java -version
+java version "1.8.0_191" <1>
+Java(TM) SE Runtime Environment (build 1.8.0_191-b12)
+Java HotSpot(TM) 64-Bit Server VM (build 25.191-b12, mixed mode)
+----
+
+Ce qui signifie simplement Java 8. Avec le passage aux versions basées sur le temps avec Java 9, le schéma de nommage a également changé, et les versions de Java ne sont plus préfixées par 1.x. Maintenant, le numéro de version ressemble à ceci :
+
+[source,console]
+----
+c:\Program Files\Java\jdk11\bin>java -version
+openjdk version "11" 2018-09-25 <1>
+OpenJDK Runtime Environment 18.9 (build 11+28)
+OpenJDK 64-Bit Server VM 18.9 (build 11+28, mixed mode)
+----
+
+=== Quelle est la différence entre les versions de Java ? Dois-je apprendre une version spécifique ?
+
+Venant d'autres langages de programmation avec des ruptures majeures entre les versions, comme Python 2 à 3, vous pourriez vous demander si la même chose s'applique à Java.
+
+Java est spécial à cet égard, car il est _extrêmement_ compatible avec les versions précédentes. Cela signifie que votre programme Java 5 ou 8 est garanti de fonctionner avec une machine virtuelle Java 8-20 - avec quelques exceptions dont vous n'avez pas à vous soucier pour l'instant.
+
+Cela ne fonctionne évidemment pas dans l'autre sens, par exemple si votre programme repose sur des fonctionnalités de Java 20, qui ne sont tout simplement pas disponibles sous une JVM Java 8.
+
+Cela signifie plusieurs choses :
+
+* Vous n'apprenez pas simplement une version spécifique de Java, comme 12.
+* Vous obtenez plutôt une bonne base dans toutes les fonctionnalités du langage jusqu'à Java 8. Cela sert de bonne base.
+* Et ensuite, vous apprenez, à partir d'un guide comme celui-ci, quelles _fonctionnalités supplémentaires_ sont arrivées dans Java 9-20 et vous les utilisez dès que possible.
+
+=== Quels sont des exemples de ces nouvelles fonctionnalités entre les versions de Java ?
+
+Jetez un œil à la section <<Fonctionnalités de Java 8-20>>.
+
+Mais en règle générale : Les anciens cycles de publication plus longs (3-5 ans, jusqu'à Java 8) signifiaient beaucoup de nouvelles fonctionnalités par version.
+
+Le cycle de publication de 6 mois signifie beaucoup moins de fonctionnalités par version, donc vous pouvez rapidement rattraper les fonctionnalités du langage Java 9-20.
+
+=== Quelle est la différence entre un JRE et un JDK ?
+
+Jusqu'à présent, nous n'avons parlé que de "Java". Mais qu'est-ce que Java exactement ?
+
+Tout d'abord, vous devez faire la différence entre un _JRE_ (Java Runtime Environment) et un _JDK_ (Java Development Kit).
+
+Historiquement, vous téléchargiez simplement un _JRE_ si vous étiez uniquement intéressé par l'exécution de programmes Java. Un JRE inclut, entre autres, la machine virtuelle Java (JVM) et l'outil en ligne de commande "java".
+
+Pour développer de nouveaux programmes Java, vous deviez télécharger un _JDK_. Un JDK inclut _tout_ ce que le JRE a, ainsi que le compilateur _javac_ et quelques autres outils comme _javadoc_ (générateur de documentation Java) et _jdb_ (débogueur Java).
+
+Maintenant, pourquoi est-ce que je parle au passé ?
+
+Jusqu'à Java 8, le site web d'Oracle proposait des JRE et des JDK en téléchargement séparé - même si le JDK incluait toujours un JRE dans un dossier séparé. Avec Java 9, cette distinction a pratiquement disparu, et vous téléchargez _toujours_ un JDK. La structure des répertoires des JDK a également changé, sans avoir de dossier JRE explicite.
+
+Ainsi, même si certaines distributions (voir la section <<Distributions Java>>) proposent toujours un téléchargement séparé de JRE, il semble y avoir une tendance à ne proposer qu'un JDK. Par conséquent, nous allons désormais utiliser _Java_ et _JDK_ de manière interchangeable.
+
+=== Comment installer Java ou un JDK alors ?
+
+Ignorez les images Docker Java, les wrappers .msi ou les packages spécifiques à une plateforme pour le moment. En fin de compte, Java est juste un fichier .zip, rien de plus, rien de moins.
+
+Par conséquent, tout ce que vous devez faire pour installer Java sur votre machine est de dézipper votre fichier jdk-{5-20}.zip. Vous n'avez même pas besoin de droits d'administrateur pour cela.
+
+Votre fichier Java dézippé ressemblera à ceci :
+
+[source,console]
+----
+Directory C:\dev\jdk-11
+
+12.11.2019  19:24    <DIR>          .
+12.11.2019  19:24    <DIR>          ..
+12.11.2019  19:23    <DIR>          bin
+12.11.2019  19:23    <DIR>          conf
+12.11.2019  19:24    <DIR>          include
+12.11.2019  19:24    <DIR>          jmods
+22.08.2018  19:18    <DIR>          legal
+12.11.2019  19:24    <DIR>          lib
+12.11.2019  19:23             1.238 release
+----
+
+La magie opère dans le répertoire /bin, qui sous Windows ressemble à ceci :
+
+[source,console]
+----
+Directory C:\dev\jdk-11\bin
+...
+12.11.2019  19:23           272.736 java.exe
+...
+12.11.2019  19:23            20.832 javac.exe
+...
+----
+
+Donc, tout ce que vous avez à faire est de dézipper ce fichier et de mettre le répertoire /bin dans votre variable PATH, afin que vous puissiez appeler la commande 'java' depuis n'importe où.
+
+(Au cas où vous vous poseriez la question, les installateurs graphiques comme celui d'Oracle ou d'Adoptium feront le dézippage et la modification de la variable PATH pour vous, c'est à peu près tout.)
+
+Pour vérifier que vous avez bien installé Java, vous pouvez simplement exécuter 'java -version'. Si la sortie ressemble à celle ci-dessous, vous êtes prêt.
+
+[source,console]
+----
+openjdk version "11" 2018-09-25
+OpenJDK Runtime Environment 18.9 (build 11+28)
+OpenJDK 64-Bit Server VM 18.9 (build 11+28, mixed mode)
+----
+
+Maintenant, il reste une question : Où obtenez-vous ce fichier .zip Java ? Ce qui nous amène au sujet des distributions.
+
+== Distributions Java
+
+Il existe une variété de sites proposant des téléchargements de Java (lire : JDK) et il n'est pas clair "qui propose quoi et avec quelle licence". Cette section apportera quelques éclaircissements à ce sujet.
+
+=== Le projet OpenJDK
+
+En termes de code source Java (lire : le code source pour votre JRE/JDK), il n'y en a _qu'un seul_, hébergé sur le site http://openjdk.java.net/projects/jdk/[OpenJDK project].
+
+Cependant, il ne s'agit que de code source, pas d'une version distribuable (pensez : votre fichier .zip avec la commande java compilée pour votre système d'exploitation spécifique). En théorie, vous et moi pourrions produire une version à partir de ce code source, l'appeler, disons, _MarcoJDK_ et commencer à la distribuer. Mais notre distribution manquerait de certification pour pouvoir légalement nous appeler _Java SE compatible_.
+
+C'est pourquoi, en pratique, il y a une poignée de fournisseurs qui créent ces versions, les certifient (voir https://en.wikipedia.org/wiki/Technology_Compatibility_Kit[TCK]) et les distribuent ensuite.
+
+Et bien que les fournisseurs ne puissent pas, par exemple, supprimer une méthode de la classe String avant de produire une nouvelle version de Java, ils peuvent ajouter du branding (youpi !) ou d'autres utilitaires (par exemple, CLI) qu'ils jugent utiles. Mais à part cela, le code source original est _le même_ pour _toutes_ les distributions Java.
+
+=== Versions OpenJDK (par Oracle) et versions OracleJDK
+
+L'un des fournisseurs qui construit Java à partir du code source est Oracle. Cela conduit à _deux distributions Java différentes_, ce qui peut être très déroutant au début.
+
+1. http://jdk.java.net[Versions OpenJDK] par Oracle(!). Ces versions sont gratuites et non marquées, mais Oracle ne publiera pas de mises à jour pour les anciennes versions, par exemple Java 15, dès que Java 16 sortira.
+
+2. https://www.oracle.com/technetwork/java/javase/downloads/index.html[OracleJDK], qui est une version marquée, commerciale à partir du changement de licence en 2019. [line-through]#Ce qui signifie qu'elle peut être utilisée gratuitement pendant le développement, mais vous devez payer Oracle si vous l'utilisez en production. Pour cela, vous obtenez un support plus long, c'est-à-dire des mises à jour des versions et un numéro de téléphone que vous pouvez appeler si votre JVM devient folle.# En septembre 2021, à partir d'Oracle Java 17, Oracle a introduit la https://www.oracle.com/downloads/licenses/no-fee-license.html[licence No-Fee Terms and Conditions License], rendant à nouveau OracleJDK gratuite, avec quelques limitations que vous pouvez lire en passant des heures sur le site web d'Oracle.
+
+Historiquement (avant Java 8), il y avait des différences de code source entre les versions OpenJDK et OracleJDK, où vous pouviez dire qu'OracleJDK était 'meilleur'. Mais aujourd'hui, les deux versions sont essentiellement les mêmes, avec https://blogs.oracle.com/java-platform-group/oracle-jdk-releases-for-java-11-and-later[quelques différences mineures].
+
+Cela se résume donc à savoir si vous voulez un support commercial payant (un numéro de téléphone) pour votre version de Java installée.
+
+=== Eclipse Temurin d'Adoptium (anciennement AdoptOpenJDK)
+
+En 2017, un groupe de membres de Java User Group, de développeurs et de fournisseurs (Amazon, Microsoft, Pivotal, Redhat et d'autres) a lancé une communauté appelée https://adoptopenjdk.net/[AdoptOpenJDK]. En août 2021, le projet AdoptOpenJDK a déménagé vers un nouveau domicile et s'appelle maintenant le projet https://projects.eclipse.org/projects/adoptium[Eclipse Adoptium]. https://adoptium.net/en-GB/members/[Voici] la liste actuelle des membres du groupe de travail Adoptium.
+
+Adoptium fournit des versions OpenJDK gratuites et solides, appelées `_Eclipse Temurin_`, avec https://adoptium.net/support.html[une disponibilité/mise à jour plus longue], sur une variété de systèmes d'exploitation, d'architectures et de versions.
+
+*Hautement recommandé* si vous cherchez à installer Java.
+
+=== Azul Zulu, Amazon Corretto, SAPMachine
+
+Vous trouverez une liste complète des versions OpenJDK sur le site https://en.wikipedia.org/wiki/OpenJDK[OpenJDK Wikipedia]. Parmi elles, on trouve https://www.azul.com/products/zulu-community/[Azul Zulu], https://aws.amazon.com/de/corretto/[Amazon Corretto] ainsi que https://sap.github.io/SapMachine/[SapMachine], pour n'en citer que quelques-unes. Pour simplifier à l'extrême, cela se résume à avoir différentes options de support/garanties de maintenance.
+
+Cependant, si vous travaillez, par exemple, sur AWS, il est logique de simplement utiliser leurs versions OpenJDK Amazon Corretto, à condition qu'elles offrent la version de Java que vous souhaitez utiliser.
+
+=== Un aperçu complet des distributions OpenJDK
+
+https://twitter.com/rafaelcodes[Rafael Winterhalter] a compilé une excellente liste de toutes les versions OpenJDK disponibles, y compris leur système d'exploitation, leur architecture, leur licence, leur support et leurs fenêtres de maintenance.
+
+Consultez-la ici : https://rafael.codes/openjdk/.
+
+=== Recommandation
+
+Pour réitérer depuis le début, en 2023 et au-delà, sauf si vous avez des exigences très spécifiques, allez chercher votre fichier jdk.zip (.tar.gz/.msi/.pkg) sur https://adoptium.net (appelé `_Eclipse Temurin_`) ou choisissez un package fourni par votre fournisseur de système d'exploitation / fournisseur de cloud.
+
+== Fonctionnalités de Java 8-20
+
+Comme mentionné au tout début de ce guide : Essentiellement _toutes_ (ne soyez pas pointilleux maintenant) les fonctionnalités du langage Java 8 fonctionnent également dans Java 20. Il en va de même pour toutes les autres versions de Java intermédiaires.
+
+Ce qui signifie que toutes les fonctionnalités du langage de Java 8 servent de très bonnes connaissances de base en Java et que tout le reste (Java 9-20) est essentiellement des fonctionnalités supplémentaires _en plus_ de cette base.
+
+Voici un aperçu rapide de ce que les versions spécifiques ont à offrir :
+
+=== - Java 8 -
+
+Java 8 a été une version massive et vous pouvez trouver une liste de toutes les fonctionnalités sur https://www.oracle.com/technetwork/java/javase/8-whats-new-2157071.html[le site web d'Oracle]. Il y a deux ensembles de fonctionnalités principales que je voudrais mentionner ici, cependant :
+
+==== Fonctionnalités du Langage : Lambdas, etc.
+
+Avant Java 8, chaque fois que vous vouliez instancier, par exemple, un nouveau Runnable, vous deviez écrire une classe interne anonyme comme ceci :
+
+[source,java]
+----
+ Runnable runnable = new Runnable(){
+       @Override
+       public void run(){
+         System.out.println("Hello world !");
+       }
+     };
+----
+
+Avec les lambdas, le même code ressemble à ceci :
+
+[source,java]
+----
+Runnable runnable = () -> System.out.println("Hello world two!");
+----
+
+Vous avez également obtenu des références de méthodes, des annotations répétées, des méthodes par défaut pour les interfaces et quelques autres fonctionnalités du langage.
+
+==== Collections & Streams
+
+En Java 8, vous avez également obtenu des opérations de style fonctionnel pour les collections, également connues sous le nom d'API Stream. Un exemple rapide :
+
+[source,java]
+----
+List<String> list = Arrays.asList("franz", "ferdinand", "fiel", "vom", "pferd");
+----
+
+Avant Java 8, vous deviez essentiellement écrire des boucles for pour faire quelque chose avec cette liste.
+
+Avec l'API Streams, vous pouvez faire ce qui suit :
+
+[source,java]
+----
+list.stream()
+    .filter(name -> name.startsWith("f"))
+    .map(String::toUpperCase)
+    .sorted()
+    .forEach(System.out::println);
+----
+
+==== Si vous voulez plus de pratique avec Java 8
+
+Évidemment, je ne peux donner qu'un aperçu rapide de chaque nouvelle méthode Stream, Lambda ou Optional ajoutée en Java 8 dans le cadre de ce guide.
+
+Si vous voulez un aperçu plus détaillé et approfondi - y compris des exercices - vous pouvez jeter un œil à mon https://www.marcobehler.com/courses/32-core-java-features-version-8-12?utm_campaign=java_features_guide&utm_medium=java_features_guide&utm_source=java_features_guide[cours sur les fonctionnalités de base de Java 8].
+
+=== - Java 9 -
+
+Java 9 a également été une version assez importante, avec quelques ajouts :
+
+==== Collections
+
+Les collections ont obtenu quelques nouvelles méthodes d'aide pour construire facilement des Listes, des Sets et des Maps.
+
+[source,java]
+----
+List<String> list = List.of("one", "two", "three");
+Set<String> set = Set.of("one", "two", "three");
+Map<String, String> map = Map.of("foo", "one", "bar", "two");
+----
+
+==== Streams
+
+Les Streams ont obtenu quelques ajouts, sous la forme de méthodes takeWhile, dropWhile, iterate.
+
+[source,java]
+----
+Stream<String> stream = Stream.iterate("", s -> s + "s")
+  .takeWhile(s -> s.length() < 10);
+----
+
+==== Optionals
+
+Les Optionals ont obtenu la méthode ifPresentOrElse, qui manquait cruellement.
+
+[source,java]
+----
+user.ifPresentOrElse(this::displayAccount, this::displayLogin);
+----
+
+==== Interfaces
+
+Les interfaces ont obtenu des méthodes privées :
+
+[source,java]
+----
+public interface MyInterface {
+
+    private static void myPrivateMethod(){
+        System.out.println("Yay, I am private!");
+    }
+}
+----
+
+==== Autres Fonctionnalités du Langage
+
+Et quelques autres améliorations, comme une déclaration try-with-resources améliorée ou des extensions de l'opérateur diamant.
+
+==== JShell
+
+Enfin, Java a obtenu un shell où vous pouvez essayer des commandes simples et obtenir des résultats immédiats.
+
+[source,console]
+----
+% jshell
+|  Welcome to JShell -- Version 9
+|  For an introduction type: /help intro
+
+jshell> int x = 10
+x ==> 10
+----
+
+==== HTTPClient
+
+Java 9 a apporté la version initiale en prévisualisation d'un nouveau HttpClient. Jusqu'alors, le support HTTP intégré de Java était plutôt bas niveau, et vous deviez recourir à des bibliothèques tierces comme Apache HttpClient ou OkHttp (qui sont de grandes bibliothèques, d'ailleurs !).
+
+Avec Java 9, Java a obtenu son propre client moderne - bien qu'en mode prévisualisation, ce qui signifie sujet à changement dans les versions ultérieures de Java.
+
+==== Projet Jigsaw : Modules Java et fichiers JAR Multi-Release
+
+Java 9 a obtenu le https://www.oracle.com/corporate/features/understanding-java-9-modules.html[système de modules Jigsaw], qui ressemble un peu à la bonne vieille https://en.wikipedia.org/wiki/OSGi[spécification OSGI]. Il n'est pas dans le cadre de ce guide d'entrer dans les détails complets de Jigsaw, mais jetez un œil aux liens précédents pour en savoir plus.
+
+Les fichiers .jar Multi-Release ont permis d'avoir un fichier .jar qui contient différentes classes pour différentes versions de JVM. Ainsi, votre programme peut se comporter différemment/utiliser différentes classes lorsqu'il est exécuté sur Java 8 vs. Java 10, par exemple.
+
+==== Si vous voulez plus de pratique avec Java 9
+
+Encore une fois, ce n'est qu'un aperçu rapide des fonctionnalités de Java 9 et si vous voulez des explications plus approfondies et des exercices, jetez un œil au https://www.marcobehler.com/courses/32-core-java-features-version-8-12?utm_campaign=java_features_guide&utm_medium=java_features_guide&utm_source=java_features_guide[cours sur les fonctionnalités de base de Java 9].
+
+=== - Java 10 -
+
+Il y a eu quelques changements dans Java 10, comme le Garbage Collection, etc. Mais le seul vrai changement que vous, en tant que développeur, verrez probablement est l'introduction du mot-clé "var", également appelé inférence de type de variable locale.
+
+==== Inférence de Type de Variable Locale : mot-clé var
+
+[source,java]
+----
+// Avant Java 10
+
+String myName = "Marco";
+
+// Avec Java 10
+
+var myName = "Marco"
+----
+
+Cela ressemble à du Javascript, n'est-ce pas ? C'est toujours fortement typé, cependant, et ne s'applique qu'aux variables _à l'intérieur des méthodes_ (merci, https://www.reddit.com/user/dpash[dpash], pour l'avoir rappelé).
+
+=== - Java 11 -
+
+Java 11 était également une version relativement petite, du point de vue du développeur.
+
+==== Chaînes de caractères et fichiers
+
+Les chaînes de caractères et les fichiers ont obtenu quelques nouvelles méthodes (pas toutes listées ici) :
+
+[source,java]
+----
+"Marco".isBlank();
+"Mar\nco".lines();
+"Marco  ".strip();
+
+Path path = Files.writeString(Files.createTempFile("helloworld", ".txt"), "Hi, my name is!");
+String s = Files.readString(path);
+----
+
+==== Exécution de fichiers sources
+
+À partir de Java 10, vous pouvez exécuter des fichiers sources Java _sans_ avoir à les compiler au préalable. Un pas vers le scripting.
+
+[source,bash]
+----
+ubuntu@DESKTOP-168M0IF:~$ java MyScript.java
+----
+
+==== Inférence de type de variable locale (var) pour les paramètres lambda
+
+Le titre dit tout :
+
+[source,java]
+----
+(var firstName, var lastName) -> firstName + lastName
+----
+
+==== HttpClient
+
+Le HttpClient de Java 9 dans sa version finale, non en prévisualisation.
+
+==== Autres choses
+
+Flight Recorder, Garbage Collector No-Op, moteur Nashorn-Javascript déprécié, etc.
+
+=== - Java 12 -
+
+Java 12 a obtenu quelques https://www.oracle.com/technetwork/java/javase/12-relnote-issues-5211422.html[nouvelles fonctionnalités et nettoyages], mais les seules qui méritent d'être mentionnées ici sont le support d'Unicode 11 et une prévisualisation de la nouvelle expression switch, que vous verrez couverte dans la section suivante.
+
+=== - Java 13 -
+
+Vous pouvez trouver une liste complète des fonctionnalités https://www.oracle.com/technetwork/java/13-relnote-issues-5460548.html[ici], mais essentiellement, vous obtenez le support d'Unicode 12.1, ainsi que deux nouvelles fonctionnalités ou améliorations en prévisualisation (sujettes à changement dans le futur) :
+
+==== Expression Switch (Prévisualisation)
+
+Les expressions switch peuvent maintenant retourner une valeur. Et vous pouvez utiliser une syntaxe de style lambda pour vos expressions, sans les problèmes de fall-through/break :
+
+Les anciennes déclarations switch ressemblaient à ceci :
+
+[source,java]
+----
+switch(status) {
+  case SUBSCRIBER:
+    // bloc de code
+    break;
+  case FREE_TRIAL:
+    // bloc de code
+    break;
+  default:
+    // bloc de code
+}
+----
+
+Alors qu'avec Java 13, les déclarations switch peuvent ressembler à ceci :
+
+[source,java]
+----
+boolean result = switch (status) {
+    case SUBSCRIBER -> true;
+    case FREE_TRIAL -> false;
+    default -> throw new IllegalArgumentException("quelque chose est trouble !");
+};
+----
+
+==== Chaînes de caractères multilignes (Prévisualisation)
+
+Vous pouvez _enfin_ faire ceci en Java :
+
+[source,java]
+----
+String htmlBeforeJava13 = "<html>\n" +
+              "    <body>\n" +
+              "        <p>Hello, world</p>\n" +
+              "    </body>\n" +
+              "</html>\n";
+
+String htmlWithJava13 = """
+              <html>
+                  <body>
+                      <p>Hello, world</p>
+                  </body>
+              </html>
+              """;
+----
+
+=== - Java 14 -
+
+==== Expression Switch (Standard)
+
+Les expressions switch qui étaient en _prévisualisation_ dans les versions 12 et 13 sont maintenant standardisées.
+
+[source,java]
+----
+int numLetters = switch (day) {
+    case MONDAY, FRIDAY, SUNDAY -> 6;
+    case TUESDAY                -> 7;
+    default      -> {
+      String s = day.toString();
+      int result = s.length();
+      yield result;
+    }
+};
+----
+
+==== Records (Prévisualisation)
+
+Il existe maintenant des classes record, qui aident à soulager la douleur d'écrire beaucoup de code passe-partout avec Java.
+
+Regardez cette classe pré-Java 14, qui ne contient que des données, (potentiellement) des getters/setters, equals/hashcode, toString.
+
+[source,java]
+----
+final class Point {
+    public final int x;
+    public final int y;
+
+    public Point(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+    // implémentations basées sur l'état de equals, hashCode, toString
+    // rien d'autre
+----
+
+Avec les records, cela peut maintenant être écrit comme ceci :
+
+[source,java]
+----
+record Point(int x, int y) { }
+----
+
+Encore une fois, il s'agit d'une fonctionnalité en prévisualisation et sujette à changement dans les versions futures.
+
+==== Exceptions NullPointerException utiles
+
+Enfin, les NullPointerException décrivent _exactement_ quelle variable était nulle.
+
+[source,java]
+----
+author.age = 35;
+---
+Exception in thread "main" java.lang.NullPointerException:
+     Cannot assign field "age" because "author" is null
+----
+
+==== Pattern Matching pour instanceof (Prévisualisation)
+
+Alors qu'auparavant vous deviez (caster) vos objets dans un instanceof comme ceci :
+
+[source,java]
+----
+if (obj instanceof String) {
+    String s = (String) obj;
+    // utiliser s
+}
+----
+
+Vous pouvez maintenant faire ceci, supprimant effectivement le cast.
+
+[source,java]
+----
+if (obj instanceof String s) {
+    System.out.println(s.contains("hello"));
+}
+----
+
+==== Outil de packaging (Incubateur)
+
+Il existe un outil incubant _jpackage_, qui permet de packager votre application Java en packages spécifiques à la plateforme, y compris toutes les dépendances nécessaires.
+
+* Linux : deb et rpm
+* macOS : pkg et dmg
+* Windows : msi et exe
+
+==== Garbage Collectors
+
+Le Garbage Collector Concurrent Mark Sweep (CMS) a été supprimé, et le Garbage Collector Z expérimental a été ajouté.
+
+=== - Java 15 -
+
+==== Blocs de texte / Chaînes de caractères multilignes
+
+Introduit comme une fonctionnalité expérimentale dans Java 13 (voir ci-dessus), les chaînes de caractères multilignes sont maintenant prêtes pour la production.
+
+[source,java]
+----
+String text = """
+                Lorem ipsum dolor sit amet, consectetur adipiscing \
+                elit, sed do eiusmod tempor incididunt ut labore \
+                et dolore magna aliqua.\
+                """;
+----
+
+==== Classes scellées - Prévisualisation
+
+Si vous avez déjà voulu avoir un contrôle encore plus serré sur qui est autorisé à sous-classer vos classes, il y a maintenant la fonctionnalité `_scellée_`.
+
+[source,java]
+----
+public abstract sealed class Shape
+    permits Circle, Rectangle, Square {...}
+----
+
+Cela signifie que bien que la classe soit `_publique_`, les seules classes autorisées à sous-classer `_Shape_` sont `_Circle_`, `_Rectangle_` et `_Square_`.
+
+==== Records & Pattern Matching
+
+Les fonctionnalités `_Records_` et `_Pattern Matching_` de Java 14 (voir ci-dessus) sont toujours en prévisualisation et pas encore finalisées.
+
+==== Moteur JavaScript Nashorn
+
+Après avoir été déprécié dans Java 11, le moteur JavaScript Nashorn a finalement été supprimé dans JDK 15.
+
+==== ZGC : Prêt pour la production
+
+Le https://wiki.openjdk.java.net/display/zgc/Main[Garbage Collector Z] n'est plus marqué comme expérimental. Il est maintenant prêt pour la production.
+
+=== - Java 16 -
+
+==== Pattern Matching pour instanceof
+
+Au lieu de :
+
+[source,java]
+----
+if (obj instanceof String) {
+    String s = (String) obj;
+    // par exemple s.substring(1)
+}
+----
+
+Vous pouvez maintenant faire ceci :
+
+[source,java]
+----
+if (obj instanceof String s) {
+    // Laissez le pattern matching faire le travail !
+    // ... s.substring(1)
+}
+----
+
+==== Canaux de sockets Unix-Domain
+
+Vous pouvez maintenant vous connecter à des sockets Unix domain (également supportés par macOS et Windows (10+)).
+
+[source,java]
+----
+ socket.connect(UnixDomainSocketAddress.of(
+        "/var/run/postgresql/.s.PGSQL.5432"));
+----
+
+==== API Foreign Linker - Prévisualisation
+
+Un remplacement prévu pour JNI (Java Native Interface), vous permettant de vous lier à des bibliothèques natives (pensez C).
+
+==== Records & Pattern Matching
+
+Les deux fonctionnalités sont maintenant prêtes pour la production et ne sont plus marquées `_en prévisualisation_`.
+
+==== Classes scellées
+
+Les classes scellées (de Java 15, voir ci-dessus) sont toujours en prévisualisation.
+
+=== - Java 17 -
+
+Java 17 est la nouvelle version de support à long terme (LTS) de Java, après Java 11.
+
+==== Pattern Matching pour switch (Prévisualisation)
+
+Déjà disponible dans de nombreux autres langages :
+
+[source,java]
+----
+public String test(Object obj) {
+
+    return switch(obj) {
+
+    case Integer i -> "Un entier";
+
+    case String s -> "Une chaîne de caractères";
+
+    case Cat c -> "Un chat";
+
+    default -> "Je ne sais pas ce que c'est";
+
+    };
+
+}
+----
+
+Maintenant, vous pouvez passer des `_Objects_` aux fonctions switch et vérifier un type particulier.
+
+==== Classes scellées (Finalisées)
+
+Une fonctionnalité qui a été livrée dans Java 15 en prévisualisation est maintenant finalisée.
+
+Rappel : Si vous avez déjà voulu avoir un contrôle encore plus serré sur qui est autorisé à sous-classer vos classes, il y a maintenant la fonctionnalité `_scellée_`.
+
+[source,java]
+----
+public abstract sealed class Shape
+    permits Circle, Rectangle, Square {...}
+----
+
+Cela signifie que bien que la classe soit `_publique_`, les seules classes autorisées à sous-classer `_Shape_` sont `_Circle_`, `_Rectangle_` et `_Square_`.
+
+==== API Foreign Function & Memory (Incubateur)
+
+Un remplacement pour l'interface Java Native Interface (JNI). Vous permet d'appeler des fonctions natives et d'accéder à la mémoire `_en dehors_` de la JVM. Pensez aux appels C pour l'instant, mais avec des plans pour supporter des langages supplémentaires (comme C++, Fortran) au fil du temps.
+
+==== Dépréciation du Security Manager
+
+Depuis Java 1.0, il y avait un Security Manager. Il est maintenant déprécié et sera supprimé dans une version future.
+
+=== - Java 18 -
+
+==== UTF-8 par défaut
+
+Si vous essayiez, par exemple, de lire des fichiers sans spécifier un encodage explicite, l'encodage du système d'exploitation était utilisé dans les versions précédentes de Java (par exemple UTF-8 sur Linux et macOS, et Windows-1252 sur Windows). Avec Java 18, cela a changé pour UTF-8 par défaut.
+
+==== Serveur Web simple
+
+Java 18 vient maintenant avec un serveur HTTP rudimentaire, que vous pouvez démarrer avec :
+
+[source,console]
+----
+jwebserver
+----
+
+Apprenez-en plus sur ses fonctionnalités https://openjdk.org/jeps/408[ici].
+
+==== Autres choses pas si excitantes / Fonctionnalités en incubation
+
+Pour une liste complète et un aperçu, consultez https://www.happycoders.eu/java/java-18-features/[cet article].
+
+=== - Java 19 -
+
+Java 19 a ajouté quelques fonctionnalités excitantes, comme les `_Virtual Threads_` et la nouvelle `_Foreign Function & Memory API_`, ainsi que la `_Structured Concurrency_` et l'`_API Vector_` - mais elles sont toutes en mode prévisualisation, donc sujettes à changement dans les prochaines versions.
+
+Si vous voulez en savoir plus sur ces fonctionnalités et ce qui est à venir, consultez https://www.happycoders.eu/java/java-19-features/[cet article].
+
+=== - Java 20 -
+
+En dehors de quelques fonctionnalités mineures, Java 20 a principalement itéré sur des fonctionnalités de prévisualisation précédemment introduites : Scope Values, Record Patterns, Pattern Matching pour switch, Foreign Function & Memory API, Virtual Threads & Structured Concurrency. Toutes sont en cours de travail, c'est-à-dire qu'elles n'ont pas encore été finalisées.
+
+Si vous voulez en savoir plus sur ces fonctionnalités et ce qui est à venir, consultez https://www.happycoders.eu/java/java-20-features/[cet article].
+
+=== - Java 21 -
+
+Java 21, la prochaine version de support à long terme (LTS) après Java 17, apporte plusieurs améliorations et nouvelles fonctionnalités. Voici un aperçu des principales nouveautés :
+
+#### Pattern Matching pour switch (Finalisé)
+
+La fonctionnalité de Pattern Matching pour les expressions `switch`, introduite en prévisualisation dans les versions précédentes, est maintenant finalisée. Cela permet une syntaxe plus concise et expressive pour les structures de contrôle `switch`.
+
+[source,java]
+----
+public String test(Object obj) {
+    return switch(obj) {
+        case Integer i -> "Un entier";
+        case String s  -> "Une chaîne de caractères";
+        case Cat c     -> "Un chat";
+        default        -> "Je ne sais pas ce que c'est";
+    };
+}
+----
+
+#### Virtual Threads (Finalisé)
+
+Les Virtual Threads, introduits en prévisualisation dans Java 19, sont maintenant finalisés. Cette fonctionnalité vise à simplifier la programmation concurrente en permettant la création de millions de threads légers, gérés par la JVM, sans surcharger le système d'exploitation.
+
+[source,java]
+----
+Thread.startVirtualThread(() -> {
+    System.out.println("Je suis un thread virtuel !");
+});
+----
+
+#### Structured Concurrency (Finalisé)
+
+La Structured Concurrency, également introduite en prévisualisation dans Java 19, est maintenant finalisée. Elle permet de gérer les tâches concurrentes de manière structurée, en les regroupant dans un même contexte, ce qui facilite la gestion des erreurs et la maintenance du code.
+
+[source,java]
+----
+try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+    Future<String> future1 = scope.fork(() -> task1());
+    Future<String> future2 = scope.fork(() -> task2());
+
+    scope.join(); // Attend que toutes les tâches soient terminées
+    scope.throwIfFailed(); // Propage les exceptions si une tâche échoue
+
+    String result1 = future1.resultNow();
+    String result2 = future2.resultNow();
+}
+----
+
+#### Record Patterns (Finalisé)
+
+Les Record Patterns, introduits en prévisualisation dans Java 20, sont maintenant finalisés. Ils permettent de déstructurer les objets de type `record` directement dans les expressions `switch` ou `instanceof`.
+
+[source,java]
+----
+record Point(int x, int y) {}
+
+public void printPoint(Object obj) {
+    if (obj instanceof Point(int x, int y)) {
+        System.out.println("Point: (" + x + ", " + y + ")");
+    }
+}
+----
+
+#### Foreign Function & Memory API (Finalisé)
+
+L'API Foreign Function & Memory, introduite en incubation dans les versions précédentes, est maintenant finalisée. Elle permet d'interagir avec du code natif (C, C++, etc.) et de manipuler la mémoire en dehors de la JVM de manière sécurisée et performante.
+
+[source,java]
+----
+try (MemorySession session = MemorySession.openConfined()) {
+    MemorySegment segment = MemorySegment.allocateNative(100, session);
+    segment.setUtf8String(0, "Hello, native world!");
+    System.out.println(segment.getUtf8String(0));
+}
+----
+
+#### Autres améliorations
+
+- **Garbage Collector Z** : Améliorations continues pour réduire la latence et améliorer les performances.
+- **Améliorations de la sécurité** : Renforcement des mécanismes de sécurité pour protéger les applications contre les vulnérabilités.
+- **API Vector** : Toujours en incubation, cette API vise à optimiser les calculs vectoriels pour les applications scientifiques et de machine learning.
+
+=== - Java 22 -
+
+Java 22, prévue pour mars 2024, apportera probablement de nouvelles fonctionnalités en prévisualisation ou en incubation, ainsi que des améliorations continues des fonctionnalités existantes. Voici quelques attentes :
+
+#### Pattern Matching pour les primitives
+
+Une extension du Pattern Matching pour les types primitifs pourrait être introduite, permettant une syntaxe plus uniforme pour les types primitifs et les objets.
+
+#### Améliorations de l'API Vector
+
+L'API Vector, toujours en incubation, pourrait voir des améliorations pour mieux supporter les architectures modernes et les besoins en calcul intensif.
+
+#### Nouveaux Garbage Collectors
+
+Des travaux sont en cours pour introduire de nouveaux Garbage Collectors, comme le Garbage Collector Epsilon, qui pourrait être utilisé pour des applications spécifiques où la gestion de la mémoire n'est pas critique.
+
+#### Améliorations de la sécurité
+
+Java continuera à renforcer ses mécanismes de sécurité, en particulier pour les applications cloud et distribuées.
+
+=== - Java 23 -
+
+Java 23, prévue pour septembre 2024, pourrait apporter des fonctionnalités majeures, en fonction des retours d'expérience sur les versions précédentes. Voici quelques spéculations :
+
+#### Finalisation des fonctionnalités en incubation
+
+Les fonctionnalités encore en incubation, comme l'API Vector, pourraient être finalisées dans cette version.
+
+#### Améliorations des Virtual Threads
+
+Les Virtual Threads pourraient voir des améliorations pour mieux supporter les applications hautement concurrentes et les frameworks modernes.
+
+#### Nouveaux outils de développement
+
+Des outils de développement supplémentaires pourraient être introduits pour faciliter la création, le débogage et le profilage des applications Java.
+
+== Conclusion
+
+Java continue d'évoluer rapidement, avec de nouvelles versions tous les six mois et des fonctionnalités innovantes qui répondent aux besoins des développeurs modernes. Que vous soyez un développeur expérimenté ou un débutant, il est essentiel de rester à jour avec les dernières versions pour tirer le meilleur parti de la plateforme Java.
+
+N'oubliez pas de consulter régulièrement les ressources officielles, comme le site d'[Adoptium](https://adoptium.net/) pour obtenir les dernières versions de Java, et de participer à la communauté pour partager vos expériences et apprendre des autres.
+
+Merci d'avoir suivi ce guide jusqu'au bout. Nous espérons qu'il vous a été utile pour comprendre les différentes versions de Java et leurs fonctionnalités. N'hésitez pas à laisser des commentaires ou des suggestions pour améliorer ce guide.
+
+== Remerciements
+
+Un grand merci à tous les contributeurs de la communauté Java, ainsi qu'aux développeurs et experts qui partagent leurs connaissances et leurs expériences pour faire avancer la plateforme. En particulier, nous remercions Stephen Colebourne pour son article approfondi sur les distributions Java, disponible [ici](https://blog.joda.org/2018/09/time-to-look-beyond-oracles-jdk.html?showComment=1536303755275#c5934330550793525320).
+
+Bonne programmation avec Java !
+
