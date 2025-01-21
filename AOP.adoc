@@ -1,0 +1,176 @@
+= AOP avec Spring
+Mourad ALIBI
+205-01-14
+:revdate: 205-01-21
+:page-layout: layout-guides
+:page-icon: files_paper
+:sourcedir: /mnt/c/dev/TODO
+:linkattrs:
+:page-image: "/images/guides/undraw_version_control_9bpv.png"
+:page-description: 
+:page-published: true
+:page-tags: ["java", "openjdk", "jdk"]
+== Introduction à l'AOP
+L'AOP (Aspect-Oriented Programming) est un paradigme de programmation qui permet de séparer les préoccupations transversales (cross-cutting concerns) du code métier. Cela inclut des fonctionnalités telles que la journalisation, la gestion des transactions, la sécurité, etc. L'AOP permet de modulariser ces préoccupations, rendant le code plus propre et plus maintenable.
+
+=== Concepts Clés
+
+- **Aspect** : Un module qui encapsule une préoccupation transversale. Par exemple, un aspect de journalisation.
+- **Join Point** : Un point dans l'exécution d'un programme, comme l'appel d'une méthode ou l'accès à un champ.
+- **Advice** : Le code qui est exécuté à un join point. Il peut être avant, après ou autour de l'exécution d'une méthode.
+- **Pointcut** : Une expression qui définit un ensemble de join points où un advice doit être appliqué.
+- **Weaving** : Le processus d'intégration des aspects dans le code principal. Cela peut se faire à la compilation, au chargement de classe ou à l'exécution.
+
+== Configuration de Spring AOP
+
+=== Dépendances Maven
+
+Pour utiliser Spring AOP, vous devez ajouter les dépendances suivantes dans votre fichier `pom.xml` :
+
+[source,xml]
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-aop</artifactId>
+</dependency>
+----
+
+=== Configuration de l'AOP
+
+Vous pouvez activer l'AOP dans votre application Spring en ajoutant l'annotation `@EnableAspectJAutoProxy` à votre classe de configuration principale.
+
+[source,java]
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+
+@Configuration
+@EnableAspectJAutoProxy
+public class AppConfig {
+}
+----
+
+== Création d'un Aspect
+
+=== Exemple d'Aspect de Journalisation
+
+Voici un exemple d'un aspect qui enregistre les appels de méthode :
+
+[source,java]
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+@Aspect
+@Component
+public class LoggingAspect {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
+
+    @After("execution(* com.example.service.*.*(..))")
+    public void logAfter(JoinPoint joinPoint) {
+        logger.info("Méthode exécutée : " + joinPoint.getSignature().getName());
+    }
+}
+----
+
+=== Explication de l'Aspect
+
+- **@Aspect** : Indique que cette classe est un aspect.
+- **@Component** : Permet à Spring de détecter cet aspect lors du scan des composants.
+- **@After** : Définit un advice qui s'exécute après l'exécution d'une méthode correspondant au pointcut spécifié.
+
+== Pointcuts
+
+=== Définir des Pointcuts
+
+Vous pouvez définir des pointcuts pour cibler des méthodes spécifiques. Voici quelques exemples :
+
+[source,java]
+@Pointcut("execution(* com.example.service.*.*(..))")
+public void serviceLayer() {}
+
+@Pointcut("within(com.example..*)")
+public void withinExamplePackage() {}
+----
+
+=== Utilisation des Pointcuts
+
+Vous pouvez utiliser ces pointcuts dans vos advices :
+
+[source,java]
+@Before("serviceLayer()")
+public void logBefore(JoinPoint joinPoint) {
+    logger.info("Avant l'exécution de : " + joinPoint.getSignature().getName());
+}
+----
+
+== Types d'Advice
+
+=== 1. Before Advice
+
+S'exécute avant l'exécution de la méthode.
+
+[source,java]
+@Before("execution(* com.example.service.*.*(..))")
+public void logBefore(JoinPoint joinPoint) {
+    logger.info("Avant l'exécution de : " + joinPoint.getSignature().getName());
+}
+----
+
+=== 2. After Advice
+
+S'exécute après l'exécution de la méthode, qu'elle réussisse ou échoue.
+
+[source,java]
+@After("execution(* com.example.service.*.*(..))")
+public void logAfter(JoinPoint joinPoint) {
+    logger.info("Après l'exécution de : " + joinPoint.getSignature().getName());
+}
+----
+
+=== 3. After Returning Advice
+
+S'exécute après l'exécution de la méthode si elle réussit.
+
+[source,java]
+@AfterReturning(pointcut = "execution(* com.example.service.*.*(..))", returning = "result")
+public void logAfterReturning(JoinPoint joinPoint, Object result) {
+    logger.info("Méthode retournée : " + result);
+}
+----
+
+=== 4. After Throwing Advice
+
+S'exécute si la méthode lève une exception.
+
+[source,java]
+@AfterThrowing(pointcut = "execution(* com.example.service.*.*(..))", throwing = "error")
+public void logAfterThrowing(JoinPoint joinPoint, Throwable error) {
+    logger.error("Exception dans : " + joinPoint.getSignature().getName() + " avec cause : " + error);
+}
+----
+
+=== 5. Around Advice
+
+Permet de contrôler l'exécution de la méthode, vous pouvez choisir de l'exécuter ou non.
+
+[source,java]
+@Around("execution(* com.example.service.*.*(..))")
+public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
+    logger.info("Avant l'exécution de : " + joinPoint.getSignature().getName());
+    Object result = joinPoint.proceed();
+    logger.info("Après l'exécution de : " + joinPoint.getSignature().getName());
+    return result;
+}
+----
+
+== Conclusion
+
+L'AOP avec Spring est un puissant outil pour gérer les préoccupations transversales dans vos applications. En utilisant des aspects, des pointcuts et des advices, vous pouvez rendre votre code plus propre et plus maintenable. Cette formation vous a donné un aperçu des concepts de base et des exemples pratiques pour commencer à utiliser l'AOP dans vos projets Spring.
+
+== Ressources Supplémentaires
+
+- [Documentation officielle de Spring AOP](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#aop)
+- [Spring AOP Tutorial](https://www.baeldung.com/spring-aop)
