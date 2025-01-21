@@ -54,6 +54,7 @@ public class AppConfig {
 Voici un exemple d'un aspect qui enregistre les appels de méthode :
 
 [source,java]
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
