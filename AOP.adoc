@@ -7,9 +7,10 @@ Mourad ALIBI
 :sourcedir: /mnt/c/dev/TODO
 :linkattrs:
 :page-image: "/images/guides/undraw_version_control_9bpv.png"
-:page-description: 
+:page-description:
 :page-published: true
 :page-tags: ["java", "openjdk", "jdk"]
+
 == Introduction à l'AOP
 L'AOP (Aspect-Oriented Programming) est un paradigme de programmation qui permet de séparer les préoccupations transversales (cross-cutting concerns) du code métier. Cela inclut des fonctionnalités telles que la journalisation, la gestion des transactions, la sécurité, etc. L'AOP permet de modulariser ces préoccupations, rendant le code plus propre et plus maintenable.
 
@@ -20,6 +21,22 @@ L'AOP (Aspect-Oriented Programming) est un paradigme de programmation qui permet
 - **Advice** : Le code qui est exécuté à un join point. Il peut être avant, après ou autour de l'exécution d'une méthode.
 - **Pointcut** : Une expression qui définit un ensemble de join points où un advice doit être appliqué.
 - **Weaving** : Le processus d'intégration des aspects dans le code principal. Cela peut se faire à la compilation, au chargement de classe ou à l'exécution.
+
+== Avantages et Inconvénients de l'AOP
+
+=== Avantages
+
+1. **Modularité** : L'AOP permet de séparer les préoccupations transversales du code métier, ce qui rend le code plus modulaire et plus facile à maintenir.
+2. **Réutilisabilité** : Les aspects peuvent être réutilisés dans différentes parties de l'application, réduisant ainsi la duplication de code.
+3. **Clarté** : En isolant les préoccupations transversales, le code métier devient plus clair et plus lisible.
+4. **Flexibilité** : Les aspects peuvent être facilement ajoutés ou modifiés sans affecter le code métier.
+
+=== Inconvénients
+
+1. **Complexité** : L'introduction de l'AOP peut ajouter une couche de complexité, rendant le code plus difficile à comprendre pour les développeurs non familiers avec ce paradigme.
+2. **Difficulté de débogage** : Le débogage peut être plus compliqué, car le flux d'exécution peut être moins évident en raison de l'injection d'aspects.
+3. **Performance** : L'utilisation excessive d'aspects peut avoir un impact sur les performances, surtout si les advices sont appliqués à de nombreux join points.
+4. **Couplage** : Bien que l'AOP vise à réduire le couplage, une mauvaise conception des aspects peut entraîner un couplage indésirable entre les aspects et le code métier.
 
 == Configuration de Spring AOP
 
@@ -54,7 +71,6 @@ public class AppConfig {
 Voici un exemple d'un aspect qui enregistre les appels de méthode :
 
 [source,java]
-
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
