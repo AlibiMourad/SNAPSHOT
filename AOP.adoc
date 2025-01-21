@@ -41,7 +41,6 @@ Vous pouvez activer l'AOP dans votre application Spring en ajoutant l'annotation
 [source,java]
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-
 @Configuration
 @EnableAspectJAutoProxy
 public class AppConfig {
@@ -61,13 +60,10 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
 @Aspect
 @Component
 public class LoggingAspect {
-
     private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
-
     @After("execution(* com.example.service.*.*(..))")
     public void logAfter(JoinPoint joinPoint) {
         logger.info("Méthode exécutée : " + joinPoint.getSignature().getName());
@@ -90,7 +86,6 @@ Vous pouvez définir des pointcuts pour cibler des méthodes spécifiques. Voici
 [source,java]
 @Pointcut("execution(* com.example.service.*.*(..))")
 public void serviceLayer() {}
-
 @Pointcut("within(com.example..*)")
 public void withinExamplePackage() {}
 ----
